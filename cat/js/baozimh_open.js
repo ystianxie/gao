@@ -122,20 +122,26 @@ async function detail(id) {
 }
 
 async function play(flag, id, flags) {
-    try {
-        var html = await request(url + id);
-        const $ = load(html);
-
-        var content = [];
-        for (const img of $('amp-img')) {
-            content.push(img.attribs.src);
-        }
-        return {
-            content: content,
-        };
-    } catch (e) {}
+    var content = [];
+    var url_ = url + id;
+    for (let i=0;i<5;i++){
+        try {
+            var html = await request(url_);
+            const $ = load(html);
+    
+            for (const img of $('amp-img')) {
+                content.push(img.attribs.src);
+            }
+            let next_chapter = $('.next_chapter')
+            if (next_chapter('a').text().indexOf("下一页") != -1 || next_chapter('a').text().indexOf("下一頁")!=-1){
+                url_ = next_chapter('a').href
+            }else{
+                break
+            }
+        } catch (e) {}
+    }
     return {
-        content: [],
+        content: content,
     };
 }
 

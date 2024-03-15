@@ -124,20 +124,22 @@ async function detail(id) {
 async function play(flag, id, flags) {
     var content = [];
     var url_ = url + id;
-    for (let i=0;i<5;i++){
+    for (var i = 0; i < 4; i++) {
         try {
-            var html = await request(url_);
-            const $ = load(html);
-    
+            let html = await request(url_);
+
+            let $ = load(html);
+
             for (const img of $('amp-img')) {
-                content.push(img.attribs.src);
+                if (img.attribs.width != "90") {
+                    content.push(img.attribs.src);
+                }
             }
-            let next_chapter = $('.next_chapter')
-            if (next_chapter('a').text().indexOf("下一页") != -1 || next_chapter('a').text().indexOf("下一頁")!=-1){
-                url_ = next_chapter('a').href
-            }else{
-                break
+            let next_chapter = $('a#next-chapter');
+            if (next_chapter.toString().indexOf("下一话") > -1) {
+               break
             }
+            url_ = /href="(.*?)"/ig.exec(next_chapter.toString())[1]        
         } catch (e) {}
     }
     return {
